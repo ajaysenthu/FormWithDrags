@@ -22,6 +22,9 @@
     
     UILabel *label;
     
+    int direction;
+    int shakes;
+    
 }
 
 
@@ -50,11 +53,29 @@
     
     _firstNameField.delegate = self;
     
+    _lastNameField.delegate = self;
+    
     _firstNameField.keyboardType = UIKeyboardTypeASCIICapable;
+    
+    _emailField.keyboardType = UIKeyboardTypeEmailAddress;
     
     _emailField.delegate = self;
     
+    _tenthGradeField.delegate = self;
+    
+    _tenthGradeField.keyboardType = UIKeyboardTypeDecimalPad;
+    
+    _twelthGradeField.delegate = self;
+    
+    _twelthGradeField.keyboardType = UIKeyboardTypeDecimalPad;
+    
+    _almaMaterField.delegate = self;
+    
+    _almaMaterField.keyboardType = UIKeyboardTypeDecimalPad;
+    
     _facebookField.delegate = self;
+    
+    _facebookField.keyboardType = UIKeyboardTypeTwitter;
     
     _mobileField.keyboardType = UIKeyboardTypePhonePad;
     
@@ -195,23 +216,6 @@
 }
 
 
-//    if(segmentedControl.selectedSegmentIndex==index) {
-
-
-
-//   }
-//    } else if(segmentedControl.selectedSegmentIndex==1) {
-//
-//
-//        temporaryLabel.text = [[mainArray objectAtIndex:1] objectAtIndex:index];
-//
-//    } else if(segmentedControl.selectedSegmentIndex==2) {
-//
-//
-//        temporaryLabel.text = [[mainArray objectAtIndex:2] objectAtIndex:index];
-//    }
-
-
 
 
 -(void)removeLabels {
@@ -224,29 +228,6 @@
         
     }
 }
-
-
-
-
-
-//    if(segmentedControl.selectedSegmentIndex==index) {
-
-
-
-//   }
-//    } else if(segmentedControl.selectedSegmentIndex==1) {
-//
-//
-//        temporaryLabel.text = [[mainArray objectAtIndex:1] objectAtIndex:index];
-//
-//    } else if(segmentedControl.selectedSegmentIndex==2) {
-//
-//
-//        temporaryLabel.text = [[mainArray objectAtIndex:2] objectAtIndex:index];
-//    }
-
-
-
 
 
 
@@ -283,6 +264,8 @@
     [_companyNameField resignFirstResponder];
     
     [_emailField resignFirstResponder];
+    
+    [_facebookField resignFirstResponder];
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -313,95 +296,101 @@
     return result;
 }
 
-//-(void)keyboardWillShow {
-//    // Animate the current view out of the way
-//    if (self.actualView.frame.origin.y >= 0)
-//    {
-//        [self setViewMovedUp:YES];
-//    }
-//    else if (self.actualView.frame.origin.y < 0)
-//    {
-//        [self setViewMovedUp:NO];
-//    }
-//}
+
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {      // return NO to disallow editing.
+
+    BOOL result = NO;
+    
+    
+    if(textField==_firstNameField) {
+        
+        result = YES;
+    
+    }else if(textField==_lastNameField){
+        
+        if(_firstNameField.text.length>0) {
+            
+            
+            result = YES;
+        } else {
+            
+            
+            result = NO;
+            
+            direction = 1;
+            shakes = 0;
+            [self shake:_actualView];
+        }
+        
+        
+    }else if(textField==_tenthGradeField) {
+        
+        if(_firstNameField.text.length>0 && _lastNameField.text.length>0) {
+            
+            result = YES;
+        } else {
+            
+            result = NO;
+            
+            direction = 1;
+            shakes = 0;
+            [self shake:_actualView];
+        }
+    }
+    
+    
+    return result;
+    
+
+}
+//- (BOOL)textFieldShouldEndEditing:(UITextField *)textField {         // return YES to allow editing to stop and to resign first responder status. NO to disallow the editing session to end
+//    
+//    BOOL result = YES;
 //
-//-(void)keyboardWillHide {
-//    if (self.actualView.frame.origin.y >= 0)
-//    {
-//        [self setViewMovedUp:YES];
-//    }
-//    else if (self.actualView.frame.origin.y < 0)
-//    {
-//        [self setViewMovedUp:NO];
-//    }
-//}
-//
-//-(void)textFieldDidBeginEditing:(UITextField *)sender
-//{
-//    if ([sender isEqual:_mobileField])
-//    {
-//        //move the main view, so that the keyboard does not hide it.
-//        if  (self.actualView.frame.origin.y >= 0)
-//        {
-//            [self setViewMovedUp:YES];
+//    if(textField==_firstNameField) {
+//        
+//        NSCharacterSet *set = [NSCharacterSet lowercaseLetterCharacterSet];
+//        
+//        
+//        
+//        
+//        if([_firstNameField.text isEqual:set]) {
+//            
+//            result = YES;
+//            
+//        } else {
+//            
+//            direction = 1;
+//            shakes = 0;
+//            [self shake:_actualView];
+//            
+//        _firstNameField.text = nil;
+//            
 //        }
 //    }
-//}
-//
-//
-////method to move the view up/down whenever the keyboard is shown/dismissed
-//-(void)setViewMovedUp:(BOOL)movedUp
-//{
-//    [UIView beginAnimations:nil context:NULL];
-//    [UIView setAnimationDuration:0.3]; // if you want to slide up the view
 //    
-//    CGRect rect = self.view.frame;
-//    if (movedUp)
-//    {
-//        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
-//        // 2. increase the size of the view so that the area behind the keyboard is covered up.
-//        rect.origin.y -= kOFFSET_FOR_KEYBOARD;
-//        rect.size.height += kOFFSET_FOR_KEYBOARD;
-//    }
-//    else
-//    {
-//        // revert back to the normal state.
-//        rect.origin.y += kOFFSET_FOR_KEYBOARD;
-//        rect.size.height -= kOFFSET_FOR_KEYBOARD;
-//    }
-//    self.view.frame = rect;
-//    
-//    [UIView commitAnimations];
+//    return result;
 //}
-//
-//
-//- (void)viewWillAppear:(BOOL)animated
-//{
-//    [super viewWillAppear:animated];
-//    // register for keyboard notifications
-//    [[NSNotificationCenter defaultCenter] addObserver:self
-//                                             selector:@selector(keyboardWillShow)
-//                                                 name:UIKeyboardWillShowNotification
-//                                               object:nil];
-//    
-//    [[NSNotificationCenter defaultCenter] addObserver:self
-//                                             selector:@selector(keyboardWillHide)
-//                                                 name:UIKeyboardWillHideNotification
-//                                               object:nil];
-//}
-//
-//- (void)viewWillDisappear:(BOOL)animated
-//{
-//    [super viewWillDisappear:animated];
-//    // unregister for keyboard notifications while not visible.
-//    [[NSNotificationCenter defaultCenter] removeObserver:self
-//                                                    name:UIKeyboardWillShowNotification
-//                                                  object:nil];
-//    
-//    [[NSNotificationCenter defaultCenter] removeObserver:self
-//                                                    name:UIKeyboardWillHideNotification
-//                                                  object:nil];
-//}
+
+-(void)shake:(UIView *)actualView
+{
+    [UIView animateWithDuration:0.03 animations:^
+     {
+         actualView.transform = CGAffineTransformMakeTranslation(5*direction, 0);
+     }
+                     completion:^(BOOL finished)
+     {
+         if(shakes >= 10)
+         {
+             actualView.transform = CGAffineTransformIdentity;
+             return;
+         }
+         shakes++;
+         direction = direction * -1;
+         [self shake:actualView];
+     }];
+}
+
 
 -(void)stepper {
     
