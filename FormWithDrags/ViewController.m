@@ -14,6 +14,18 @@
 
 @implementation ViewController
 
+{
+    
+    UISegmentedControl *segmentedControl;
+    
+    NSMutableArray *labelArray;
+    
+    UILabel *label;
+    
+}
+
+
+
 //#define kOFFSET_FOR_KEYBOARD 110.0
 
 - (void)viewDidLoad {
@@ -21,16 +33,24 @@
     // Do any additional setup after loading the view, typically from a nib.
     
     
-    _actualView.hidden = YES;
+    
+    self.mainArray = [[NSMutableArray alloc]init];
+
+
+    
+    _actualScroll.hidden = YES;
     
     
-    [_addButton addTarget:self action:@selector(showView) forControlEvents:UIControlEventTouchUpInside];
     
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard)];
     
     [self.actualView addGestureRecognizer:tap];
 
     _mobileField.delegate = self;
+    
+    _firstNameField.delegate = self;
+    
+    _firstNameField.keyboardType = UIKeyboardTypeASCIICapable;
     
     _emailField.delegate = self;
     
@@ -86,12 +106,159 @@
     _facebookField.leftView = _arrow;
     _facebookField.leftViewMode = UITextFieldViewModeAlways;
     
+    [_showButton addTarget:self action:@selector(createSegment:) forControlEvents:UIControlEventTouchUpInside];
+    
+    segmentedControl = [[UISegmentedControl alloc]initWithFrame:CGRectMake(10, 150, 220, 35)];
+
+    
 }
 
--(void)showView {
+
+-(IBAction)saveInArray {
     
     
-    _actualView.hidden = NO;
+    _detailsArray = [[NSMutableArray alloc]init];
+    
+    [_detailsArray addObject:_firstNameField.text];
+    [_detailsArray addObject:_lastNameField.text];
+    [_detailsArray addObject:_ageLabel.text];
+    [_detailsArray addObject:_genderLabel.text];
+    [_detailsArray addObject:_tenthGradeField.text];
+    [_detailsArray addObject:_twelthGradeField.text];
+    [_detailsArray addObject:_almaMaterField.text];
+    [_detailsArray addObject:_projectField.text];
+    [_detailsArray addObject:_experienceYearsLabel.text];
+    [_detailsArray addObject:_companyNameField.text];
+    [_detailsArray addObject:_mobileField.text];
+    [_detailsArray addObject:_emailField.text];
+    [_detailsArray addObject:_facebookField.text];
+    
+    
+    [_mainArray insertObject:_detailsArray atIndex:0];
+    
+    
+    NSLog(@"count is %lu", _mainArray.count);
+}
+
+-(void)createSegment:(UIButton*)sender
+{
+    
+    
+    _actualScroll.hidden = YES;
+    
+    
+    [self.view addSubview:segmentedControl];
+    
+    
+    
+    [segmentedControl insertSegmentWithTitle:[_detailsArray objectAtIndex:0] atIndex:0 animated:YES];
+    
+    [segmentedControl addTarget:self action:@selector(showDetails:) forControlEvents:UIControlEventAllEvents];
+    
+    
+    
+}
+
+
+-(void)showDetails:(UISegmentedControl*)sender {
+    
+    
+    
+    [self removeLabels];
+    
+    labelArray = [[NSMutableArray alloc]init];
+    
+    
+    for(int x=0; x<=480; x=x+40) {
+        
+        
+        
+        label = [[UILabel alloc]initWithFrame:CGRectMake(20, 200+x, 200, 50)];
+        
+        [labelArray addObject:label];
+        
+    }
+    
+    
+    
+    for(int index=0; index<=12; index++) {
+        
+        
+        [self.view addSubview:[labelArray objectAtIndex:index]];
+        
+        
+        label = [labelArray objectAtIndex:index];
+        
+        label.text = [[_mainArray objectAtIndex:segmentedControl.selectedSegmentIndex] objectAtIndex:index];
+    }
+    
+}
+
+
+//    if(segmentedControl.selectedSegmentIndex==index) {
+
+
+
+//   }
+//    } else if(segmentedControl.selectedSegmentIndex==1) {
+//
+//
+//        temporaryLabel.text = [[mainArray objectAtIndex:1] objectAtIndex:index];
+//
+//    } else if(segmentedControl.selectedSegmentIndex==2) {
+//
+//
+//        temporaryLabel.text = [[mainArray objectAtIndex:2] objectAtIndex:index];
+//    }
+
+
+
+
+-(void)removeLabels {
+    
+    
+    for(int index=0; index<=12; index++) {
+        
+        
+        [[labelArray objectAtIndex:index] removeFromSuperview];
+        
+    }
+}
+
+
+
+
+
+//    if(segmentedControl.selectedSegmentIndex==index) {
+
+
+
+//   }
+//    } else if(segmentedControl.selectedSegmentIndex==1) {
+//
+//
+//        temporaryLabel.text = [[mainArray objectAtIndex:1] objectAtIndex:index];
+//
+//    } else if(segmentedControl.selectedSegmentIndex==2) {
+//
+//
+//        temporaryLabel.text = [[mainArray objectAtIndex:2] objectAtIndex:index];
+//    }
+
+
+
+
+
+
+
+- (IBAction)showForm {
+
+    
+    [segmentedControl removeFromSuperview];
+    
+    [self removeLabels];
+
+    _actualScroll.hidden = NO;
 }
 
 
@@ -101,8 +268,50 @@
     
     [_mobileField resignFirstResponder];
     
+    [_firstNameField resignFirstResponder];
+    
+    [_lastNameField resignFirstResponder];
+    
+    [_tenthGradeField resignFirstResponder];
+    
+    [_twelthGradeField resignFirstResponder];
+    
+    [_almaMaterField resignFirstResponder];
+    
+    [_projectField resignFirstResponder];
+    
+    [_companyNameField resignFirstResponder];
+    
+    [_emailField resignFirstResponder];
 }
 
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    
+    [textField resignFirstResponder];
+    
+    
+    
+    return YES;
+    
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {  // return NO to not change text
+
+
+    BOOL result = YES;
+    
+    
+    if(textField==_firstNameField)
+
+    {
+    
+    if([string isEqual:@"1"]) {
+        
+        result = NO;
+    }
+    }
+    return result;
+}
 
 //-(void)keyboardWillShow {
 //    // Animate the current view out of the way
@@ -242,15 +451,11 @@
 
 }
 
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    
-    [textField resignFirstResponder];
-    
-    
-    
-    return YES;
-    
-}
+
+
+
+
+
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row   inComponent:(NSInteger)component
 {
@@ -261,504 +466,508 @@
     {
             
         case 0:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
            
             break;
         case 1:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
         case 2:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
           
             break;
         case 3:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
            
             break;
         case 4:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
         case 5:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
 
             break;
             
         case 6:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 7:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 8:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 9:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 10:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 11:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 12:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 13:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 14:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 15:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 16:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 17:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 18:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 19:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 20:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 21:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 22:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 23:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 24:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 25:
-            self.number.text = [_numberArray objectAtIndex:row];
+            self.ageLabel.text = [_numberArray objectAtIndex:row];
             
             break;
             
         case 26:
-            self.number.text = @"27";
+            self.ageLabel.text = @"27";
             
             break;
             
         case 27:
-            self.number.text = @"28";
+            self.ageLabel.text = @"28";
             
             break;
             
         case 28:
-            self.number.text = @"29";
+            self.ageLabel.text = @"29";
             
             break;
             
         case 29:
-            self.number.text = @"30";
+            self.ageLabel.text = @"30";
             
             break;
             
         case 30:
-            self.number.text = @"31";
+            self.ageLabel.text = @"31";
             
             break;
             
         case 31:
-            self.number.text = @"32";
+            self.ageLabel.text = @"32";
             
             break;
             
         case 32:
-            self.number.text = @"33";
+            self.ageLabel.text = @"33";
             
             break;
             
         case 33:
-            self.number.text = @"34";
+            self.ageLabel.text = @"34";
             
             break;
             
         case 34:
-            self.number.text = @"35";
+            self.ageLabel.text = @"35";
             
             break;
             
         case 35:
-            self.number.text = @"36";
+            self.ageLabel.text = @"36";
             
             break;
             
         case 36:
-            self.number.text = @"37";
+            self.ageLabel.text = @"37";
             
             break;
             
         case 37:
-            self.number.text = @"38";
+            self.ageLabel.text = @"38";
             
             break;
             
         case 38:
-            self.number.text = @"39";
+            self.ageLabel.text = @"39";
             
             break;
             
         case 39:
-            self.number.text = @"40";
+            self.ageLabel.text = @"40";
             
             break;
             
         case 40:
-            self.number.text = @"41";
+            self.ageLabel.text = @"41";
             
             break;
             
         case 41:
-            self.number.text = @"42";
+            self.ageLabel.text = @"42";
             
             break;
             
         case 42:
-            self.number.text = @"43";
+            self.ageLabel.text = @"43";
             
             break;
             
         case 43:
-            self.number.text = @"44";
+            self.ageLabel.text = @"44";
             
             break;
             
         case 44:
-            self.number.text = @"45";
+            self.ageLabel.text = @"45";
             
             break;
             
         case 45:
-            self.number.text = @"46";
+            self.ageLabel.text = @"46";
             
             break;
             
         case 46:
-            self.number.text = @"47";
+            self.ageLabel.text = @"47";
             
             break;
             
         case 47:
-            self.number.text = @"48";
+            self.ageLabel.text = @"48";
             
             break;
             
         case 48:
-            self.number.text = @"49";
+            self.ageLabel.text = @"49";
             
             break;
             
         case 49:
-            self.number.text = @"50";
+            self.ageLabel.text = @"50";
             
             break;
             
         case 50:
-            self.number.text = @"51";
+            self.ageLabel.text = @"51";
             
             break;
             
         case 51:
-            self.number.text = @"52";
+            self.ageLabel.text = @"52";
             
             break;
             
         case 52:
-            self.number.text = @"53";
+            self.ageLabel.text = @"53";
             
             break;
             
         case 53:
-            self.number.text = @"54";
+            self.ageLabel.text = @"54";
             
             break;
             
         case 54:
-            self.number.text = @"55";
+            self.ageLabel.text = @"55";
             
             break;
             
         case 55:
-            self.number.text = @"56";
+            self.ageLabel.text = @"56";
             
             break;
             
         case 56:
-            self.number.text = @"57";
+            self.ageLabel.text = @"57";
             
             break;
             
         case 57:
-            self.number.text = @"58";
+            self.ageLabel.text = @"58";
             
             break;
             
         case 58:
-            self.number.text = @"59";
+            self.ageLabel.text = @"59";
             
             break;
             
         case 59:
-            self.number.text = @"60";
+            self.ageLabel.text = @"60";
             
             break;
             
         case 60:
-            self.number.text = @"61";
+            self.ageLabel.text = @"61";
             
             break;
             
         case 61:
-            self.number.text = @"62";
+            self.ageLabel.text = @"62";
             
             break;
             
         case 62:
-            self.number.text = @"63";
+            self.ageLabel.text = @"63";
             
             break;
             
         case 63:
-            self.number.text = @"64";
+            self.ageLabel.text = @"64";
             
             break;
             
         case 64:
-            self.number.text = @"65";
+            self.ageLabel.text = @"65";
             
             break;
             
         case 65:
-            self.number.text = @"66";
+            self.ageLabel.text = @"66";
             
             break;
             
         case 66:
-            self.number.text = @"67";
+            self.ageLabel.text = @"67";
             
             break;
             
         case 67:
-            self.number.text = @"68";
+            self.ageLabel.text = @"68";
             
             break;
             
         case 68:
-            self.number.text = @"69";
+            self.ageLabel.text = @"69";
             
             break;
             
         case 69:
-            self.number.text = @"70";
+            self.ageLabel.text = @"70";
             
             break;
             
         case 70:
-            self.number.text = @"71";
+            self.ageLabel.text = @"71";
             
             break;
             
         case 71:
-            self.number.text = @"72";
+            self.ageLabel.text = @"72";
             
             break;
             
         case 72:
-            self.number.text = @"73";
+            self.ageLabel.text = @"73";
             
             break;
             
         case 73:
-            self.number.text = @"74";
+            self.ageLabel.text = @"74";
             
             break;
             
         case 74:
-            self.number.text = @"75";
+            self.ageLabel.text = @"75";
             
             break;
             
         case 75:
-            self.number.text = @"76";
+            self.ageLabel.text = @"76";
             
             break;
             
         case 76:
-            self.number.text = @"77";
+            self.ageLabel.text = @"77";
             
             break;
             
         case 77:
-            self.number.text = @"78";
+            self.ageLabel.text = @"78";
             
             break;
             
         case 78:
-            self.number.text = @"79";
+            self.ageLabel.text = @"79";
             
             break;
             
         case 79:
-            self.number.text = @"80";
+            self.ageLabel.text = @"80";
             
             break;
             
         case 80:
-            self.number.text = @"81";
+            self.ageLabel.text = @"81";
             
             break;
             
         case 81:
-            self.number.text = @"82";
+            self.ageLabel.text = @"82";
             
             break;
             
         case 82:
-            self.number.text = @"83";
+            self.ageLabel.text = @"83";
             
             break;
             
         case 83:
-            self.number.text = @"84";
+            self.ageLabel.text = @"84";
             
             break;
             
         case 84:
-            self.number.text = @"85";
+            self.ageLabel.text = @"85";
             
             break;
             
         case 85:
-            self.number.text = @"86";
+            self.ageLabel.text = @"86";
             
             break;
             
         case 86:
-            self.number.text = @"87";
+            self.ageLabel.text = @"87";
             
             break;
             
         case 87:
-            self.number.text = @"88";
+            self.ageLabel.text = @"88";
             
             break;
             
         case 88:
-            self.number.text = @"89";
+            self.ageLabel.text = @"89";
             
             break;
             
         case 89:
-            self.number.text = @"90";
+            self.ageLabel.text = @"90";
             
             break;
             
         case 90:
-            self.number.text = @"91";
+            self.ageLabel.text = @"91";
             
             break;
             
         case 91:
-            self.number.text = @"92";
+            self.ageLabel.text = @"92";
             
             break;
             
         case 92:
-            self.number.text = @"93";
+            self.ageLabel.text = @"93";
             
             break;
             
         case 93:
-            self.number.text = @"94";
+            self.ageLabel.text = @"94";
             
             break;
             
         case 94:
-            self.number.text = @"95";
+            self.ageLabel.text = @"95";
             
             break;
             
         case 95:
-            self.number.text = @"96";
+            self.ageLabel.text = @"96";
             
             break;
             
         case 96:
-            self.number.text = @"97";
+            self.ageLabel.text = @"97";
             
             break;
             
         case 97:
-            self.number.text = @"98";
+            self.ageLabel.text = @"98";
             
             break;
             
         case 98:
-            self.number.text = @"99";
+            self.ageLabel.text = @"99";
             
             break;
             
         case 99:
-            self.number.text = @"100";
+            self.ageLabel.text = @"100";
             
             break;
             
             
     }
     
+    
+    
 }
+
+
 
 
 @end
