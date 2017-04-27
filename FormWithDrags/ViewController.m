@@ -287,8 +287,10 @@
     if(textField==_firstNameField)
 
     {
+        
+        NSCharacterSet *set = [NSCharacterSet symbolCharacterSet];
     
-    if([string isEqual:@"1"]) {
+        if([string isEqual:set]) {
         
         result = NO;
     }
